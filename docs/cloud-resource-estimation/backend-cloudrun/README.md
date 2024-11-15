@@ -1,9 +1,9 @@
 # Estimasi Cloud Cost (Back-End menggunakan GCE)
 
 ## Cost Total
-Total : $49.58
+Total : $54.34
 
->Tambahan: ML VM Instace bisa ditingkatkan lagi hingga e2-standard-2 vCPUs: 2, RAM: 8 GiB dengan Total Cost $82.47 / month
+>Tambahan: ML VM Instace bisa ditingkatkan lagi hingga e2-standard-2 vCPUs: 2, RAM: 8 GiB dengan Total Cost $87.23 / month
 
 ## Resources
 1. ML VM Instance
@@ -50,19 +50,19 @@ Total : $49.58
     * Time : 730 Ours per month
     * Cost : $13.32 / month
 
-4. Artifact Registry
+5. Artifact Registry
     * Storage: 1GB
     * Cost: $0.05 / month
 > Note: Artifact Registry memiliki free tier 0.5GB, untuk lebih dari itu dikenakan 0.1$/GB <br>
 > Note: Artifact Repository harus menggunakan lokasi yang sama dengan service yang lain, agar tidak dikenakan biaya transfer data 
 
-5. Cloud Build
+6. Cloud Build
     * Pool Type: Standard
     * Machine Type: e2-medium
     * Build Minutes: 300 (5 Jam)
     * Cost: $0.90 / month
 
-6. Network Data Transfer
+7. Network Data Transfer
     * Internet Transfer
         * Network Service Tier: Standard Tier
         * Data: 5GB
@@ -73,3 +73,9 @@ Total : $49.58
         * Region: Indonesia
     * Cost: $0.05 / month
 
+8. NAT Gateway
+    * Type: public NAT
+    * Instance: 1
+    * Data: 2GB
+    * IP Address used: 1
+    * Cost: $4.76 / month

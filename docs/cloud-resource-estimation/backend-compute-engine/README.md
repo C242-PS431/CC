@@ -1,7 +1,7 @@
 # Estimasi Cloud Cost (Back-End menggunakan GCE)
 
 ## Cost Total
-Total : $66.29 / month
+Total : $71.06 / month
 ## Resources
 1. ML VM Instance
     * Machine Type: e2-medium

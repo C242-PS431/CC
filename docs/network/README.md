@@ -1,64 +1,96 @@
-# Fresh Guard - VPC Configuration
+# Dokumentasi VPC Network: Freshguard Network
 
-### VPC
-- **Name:** `freshguard-network`
-- **Mode:** Custom
-
-#### **Subnets**
-- **Subnet: Backend**
-  - **IP Range:** `192.168.1.0/28`
-  - **Region:** `southeast2` (Jakarta).
-
-- **Subnet: Machine Learning**
-  - **IP Range:** `192.168.1.16/28`
-  - **Region:** `southeast2` (Jakarta).
-
-- **Subnet: Database**
-  - **IP Range:** `192.168.1.32/28`
-  - **Region:** `southeast2` (Jakarta).
-
-#### **Firewalls**
-- **Allow SSH**
-  - **Protocol:** TCP
-  - **Port:** `22` (default SSH)
-  - **Source IP Range:** `0.0.0.0/0` (bisa dibatasi untuk IP internal/administrator tertentu).
-
-- **Allow HTTPS to Backend API**
-  - **Protocol:** TCP
-  - **Port:** `443` (karena HTTPS menggunakan port 443)
-  - **Source IP Range:** `0.0.0.0/0` (publik).
-
-- **Internal Communication**
-  - **Protocol:** Semua (TCP, UDP, ICMP)
-  - **Source IP Range:** `192.168.1.0/24` (untuk komunikasi antar subnet).
-
-#### **Cloud NAT**
-- **External IP:** Otomatis (gunakan IP public Google Cloud).
-- **Region:** `southeast2` (Jakarta).
-
-#### **Service Accounts**
-- **Backend**
-  - **Roles:**
-    - `roles/compute.instanceAdmin.v1` (pengelolaan VM backend).
-    - `roles/storage.objectViewer` (akses baca bucket GCS jika diperlukan).
-
-- **ML VM**
-  - **Roles:**
-    - `roles/ml.developer` (menjalankan job Machine Learning).
-    - `roles/storage.objectAdmin` (akses data model dan data training di bucket GCS).
-
-- **Cloud SQL**
-  - **Roles:**
-    - `roles/cloudsql.client` (untuk menghubungkan VM ke database).
-    - `roles/storage.objectViewer` (untuk membaca snapshot di bucket).
+## Overview
+- **Maximum Transmission Unit**: 1460
+- **VPC Network ULA Internal IPv6 Range**: Disabled
+- **Subnet Creation Mode**: Custom subnets
+- **Dynamic Routing Mode**: Regional
+- **Best Path Selection Mode**: Legacy
+- **Tags**: —
 
 ---
 
-## Notes
-1. Pastikan firewall rules hanya mengizinkan akses dari sumber yang terpercaya untuk meningkatkan keamanan.
-2. Gunakan **Private Google Access** jika diperlukan agar resource dapat mengakses layanan Google Cloud tanpa menggunakan IP publik.
-3. Monitor trafik dan performa dengan **Cloud Monitoring** dan **Cloud Logging** untuk menganalisa aktivitas jaringan dan resource.
+## Subnets
+
+### Subnet: `privat`
+- **Region**: asia-southeast2
+- **IP Stack Type**: IPv4 (single-stack)
+- **Primary IPv4 Range**:
+  - **CIDR**: `192.168.2.0/24`
+  - **Access Type**: Internal
+  - **Reserved Internal Range**: None
+- **Gateway**: `192.168.2.1`
+- **Private Google Access**: On
+- **Flow Logs**: Off
+- **Hybrid Subnets**: Off
+
+### Subnet: `public`
+- **Region**: asia-southeast2
+- **IP Stack Type**: IPv4 (single-stack)
+- **Primary IPv4 Range**:
+  - **CIDR**: `192.168.1.0/24`
+  - **Access Type**: Internal
+  - **Reserved Internal Range**: None
+- **Gateway**: `192.168.1.1`
+- **Private Google Access**: On
+- **Flow Logs**: Off
+- **Hybrid Subnets**: Off
 
 ---
 
-> Konfigurasi ini dirancang untuk proyek **Fresh Guard** dengan fokus pada keamanan, efisiensi, dan skalabilitas jaringan di region Jakarta.
+## Static Internal IP Addresses
+
+- **Name**: `serverless-ipv4-1733207977580884515`
+- **Internal IP Address**: `192.168.2.16`
+- **Subnetwork**: `privat`
+- **Region**: asia-southeast2
+- **Version**: IPv4
+
+---
+
+## Firewall Rules
+
+### Rule: `freshguard-network-allow-https`
+- **Logs**: Off
+- **Network**: `freshguard-network`
+- **Priority**: 1000
+- **Direction**: Ingress
+- **Action on Match**: Allow
+- **Target Tags**: `https-server`
+- **IP Ranges**: `0.0.0.0/0`
+- **Protocols and Ports**: `tcp:443`
+- **Enforcement**: Enabled
+- **Insights**: None
+
+### Rule: `freshguard-network-allow-http`
+- **Logs**: Off
+- **Network**: `freshguard-network`
+- **Priority**: 1000
+- **Direction**: Ingress
+- **Action on Match**: Allow
+- **Target Tags**: `https-server`
+- **IP Ranges**: `0.0.0.0/0`
+- **Protocols and Ports**: `tcp:80`
+- **Enforcement**: Enabled
+- **Insights**: None
+
+---
+
+## VPC Network Peering
+
+- **Name**: `servicenetworking-googleapis-com`
+- **Network**: `freshguard-network`
+- **Peered VPC Network**: `servicenetworking`
+- **Peered Project ID**: `s9c50239878dce03cp-tp`
+- **IP Stack Type**: IPv4 (single-stack)
+- **Exchange IPv4 Custom Routes**: Export custom routes
+- **Exchange Subnet Routes with Public IPv4**: None
+
+---
+
+## Private Service Access
+
+- **Name**: `freshguard-network-service-range`
+- **IP Range**: `10.240.0.0/16`
+- **Service Producers**: Google Cloud Platform
+- **VPC Peering Names**: `servicenetworking-googleapis-com`

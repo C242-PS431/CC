@@ -31,14 +31,15 @@
 2. **freshguard-network-allow-http**
    - **Port**: TCP 80
    - **Akses**: Mengizinkan koneksi HTTP dari semua sumber (`0.0.0.0/0`) untuk kebutuhan koneksi awal (non-enkripsi).
+3. **freshguard-network-allow-ssh**
+   - **Port**: TCP 22
+   - **Akses**: Mengizinkan koneksi SSH dari semua sumber (`0.0.0.0/0`) untuk keperluan manajemen server jarak jauh.
 
-#### Alasan Konfigurasi Firewall
-- Aturan HTTPS dibuat untuk mendukung koneksi aman dengan enkripsi.
-- Aturan HTTP disediakan untuk kompatibilitas awal sebelum mengarahkan ke HTTPS (jika diperlukan).
-
+### **Alasan Konfigurasi Firewall:**
+- **Aturan HTTPS** dibuat untuk mendukung koneksi aman dengan enkripsi, yang sangat penting untuk melindungi data yang ditransfer antara pengguna dan aplikasi.
+- **Aturan HTTP** disediakan untuk kompatibilitas awal sebelum mengarahkan pengguna ke koneksi HTTPS, meskipun komunikasi ini tidak terenkripsi.
+- **Aturan SSH** diaktifkan untuk memungkinkan akses jarak jauh ke server melalui koneksi aman (SSH) untuk administrasi dan pemeliharaan server.
 ---
 
 ## Kesimpulan
 Konfigurasi ini dibuat untuk mengoptimalkan pengelolaan jaringan. Pemisahan subnet `privat` dan `public` memastikan komunikasi internal dan eksternal terisolasi dengan baik, sedangkan firewall rules memberikan fleksibilitas sekaligus keamanan dalam akses layanan.
-
-Jika ada pertanyaan lebih lanjut, jangan ragu untuk bertanya!

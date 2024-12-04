@@ -1,12 +1,8 @@
 # Dokumentasi VPC Network: Freshguard Network
 
-## Overview
-- **Maximum Transmission Unit**: 1460
-- **VPC Network ULA Internal IPv6 Range**: Disabled
+## Informasi Penting
+- **Nama Network**: freshguard-network
 - **Subnet Creation Mode**: Custom subnets
-- **Dynamic Routing Mode**: Regional
-- **Best Path Selection Mode**: Legacy
-- **Tags**: —
 
 ---
 
@@ -14,83 +10,35 @@
 
 ### Subnet: `privat`
 - **Region**: asia-southeast2
-- **IP Stack Type**: IPv4 (single-stack)
-- **Primary IPv4 Range**:
-  - **CIDR**: `192.168.2.0/24`
-  - **Access Type**: Internal
-  - **Reserved Internal Range**: None
-- **Gateway**: `192.168.2.1`
-- **Private Google Access**: On
-- **Flow Logs**: Off
-- **Hybrid Subnets**: Off
+- **IP Range**: 192.168.2.0/24
 
 ### Subnet: `public`
 - **Region**: asia-southeast2
-- **IP Stack Type**: IPv4 (single-stack)
-- **Primary IPv4 Range**:
-  - **CIDR**: `192.168.1.0/24`
-  - **Access Type**: Internal
-  - **Reserved Internal Range**: None
-- **Gateway**: `192.168.1.1`
-- **Private Google Access**: On
-- **Flow Logs**: Off
-- **Hybrid Subnets**: Off
+- **IP Range**: 192.168.1.0/24
 
----
-
-## Static Internal IP Addresses
-
-- **Name**: `serverless-ipv4-1733207977580884515`
-- **Internal IP Address**: `192.168.2.16`
-- **Subnetwork**: `privat`
-- **Region**: asia-southeast2
-- **Version**: IPv4
+#### Alasan Konfigurasi Subnet
+- Subnet `privat` digunakan untuk komunikasi internal antar layanan di jaringan. IP range `192.168.2.0/24` dipilih karena cukup untuk kebutuhan internal dan menjaga keamanan data.
+- Subnet `public` dirancang untuk layanan yang memerlukan akses dari luar jaringan. IP range `192.168.1.0/24` dipisahkan agar mempermudah pengelolaan dan meningkatkan isolasi antar subnet.
 
 ---
 
 ## Firewall Rules
 
-### Rule: `freshguard-network-allow-https`
-- **Logs**: Off
-- **Network**: `freshguard-network`
-- **Priority**: 1000
-- **Direction**: Ingress
-- **Action on Match**: Allow
-- **Target Tags**: `https-server`
-- **IP Ranges**: `0.0.0.0/0`
-- **Protocols and Ports**: `tcp:443`
-- **Enforcement**: Enabled
-- **Insights**: None
+### Aturan Firewall:
+1. **freshguard-network-allow-https**
+   - **Port**: TCP 443
+   - **Akses**: Mengizinkan koneksi HTTPS dari semua sumber (`0.0.0.0/0`) untuk komunikasi yang aman.
+2. **freshguard-network-allow-http**
+   - **Port**: TCP 80
+   - **Akses**: Mengizinkan koneksi HTTP dari semua sumber (`0.0.0.0/0`) untuk kebutuhan koneksi awal (non-enkripsi).
 
-### Rule: `freshguard-network-allow-http`
-- **Logs**: Off
-- **Network**: `freshguard-network`
-- **Priority**: 1000
-- **Direction**: Ingress
-- **Action on Match**: Allow
-- **Target Tags**: `https-server`
-- **IP Ranges**: `0.0.0.0/0`
-- **Protocols and Ports**: `tcp:80`
-- **Enforcement**: Enabled
-- **Insights**: None
+#### Alasan Konfigurasi Firewall
+- Aturan HTTPS dibuat untuk mendukung koneksi aman dengan enkripsi.
+- Aturan HTTP disediakan untuk kompatibilitas awal sebelum mengarahkan ke HTTPS (jika diperlukan).
 
 ---
 
-## VPC Network Peering
+## Kesimpulan
+Konfigurasi ini dibuat untuk mengoptimalkan pengelolaan jaringan. Pemisahan subnet `privat` dan `public` memastikan komunikasi internal dan eksternal terisolasi dengan baik, sedangkan firewall rules memberikan fleksibilitas sekaligus keamanan dalam akses layanan.
 
-- **Name**: `servicenetworking-googleapis-com`
-- **Network**: `freshguard-network`
-- **Peered VPC Network**: `servicenetworking`
-- **Peered Project ID**: `s9c50239878dce03cp-tp`
-- **IP Stack Type**: IPv4 (single-stack)
-- **Exchange IPv4 Custom Routes**: Export custom routes
-- **Exchange Subnet Routes with Public IPv4**: None
-
----
-
-## Private Service Access
-
-- **Name**: `freshguard-network-service-range`
-- **IP Range**: `10.240.0.0/16`
-- **Service Producers**: Google Cloud Platform
-- **VPC Peering Names**: `servicenetworking-googleapis-com`
+Jika ada pertanyaan lebih lanjut, jangan ragu untuk bertanya!
